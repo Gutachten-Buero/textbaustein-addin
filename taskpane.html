@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="ngrok-skip-browser-warning" content="true" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Textbausteine</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      font-size: 13px;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    #header {
+      background: #1e3a5f;
+      color: white;
+      padding: 10px 12px 8px;
+      flex-shrink: 0;
+    }
+    #header h1 {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    #header p {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    /* Search */
+    #search-bar {
+      padding: 8px 10px;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    #search-input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: inherit;
+      outline: none;
+    }
+    #search-input:focus { border-color: #1e3a5f; }
+
+    /* Kategorie-Filter */
+    #filter-bar {
+      padding: 6px 10px;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .filter-btn {
+      font-size: 11px;
+      padding: 3px 8px;
+      border: 1px solid #c8c8c8;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      color: #444;
+    }
+    .filter-btn:hover { background: #f0f0f0; }
+    .filter-btn.active {
+      background: #1e3a5f;
+      border-color: #1e3a5f;
+      color: white;
+    }
+
+    /* Baustein-Liste */
+    #baustein-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 8px 60px;
+    }
+
+    .kategorie-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      padding: 10px 4px 4px;
+      font-weight: 600;
+    }
+
+    .baustein-card {
+      background: white;
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      padding: 10px 10px 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .baustein-card:hover {
+      border-color: #1e3a5f;
+      box-shadow: 0 1px 6px rgba(30,58,95,0.12);
+    }
+    .baustein-card.selected {
+      border-color: #1e3a5f;
+      background: #f0f4fa;
+    }
+
+    .baustein-titel {
+      font-weight: 600;
+      font-size: 12px;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .baustein-preview {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .baustein-tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 6px;
+      background: #eef2f7;
+      color: #1e3a5f;
+      border-radius: 3px;
+      margin-top: 5px;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #999;
+      padding: 30px 20px;
+      font-size: 12px;
+    }
+
+    /* Action-Bar unten */
+    #action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #e0e0e0;
+      padding: 8px 10px;
+      display: flex;
+      gap: 6px;
+    }
+
+    #btn-einfuegen {
+      flex: 1;
+      padding: 8px;
+      background: #1e3a5f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #btn-einfuegen:hover { background: #16304f; }
+    #btn-einfuegen:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    #btn-vorschau {
+      padding: 8px 12px;
+      background: white;
+      color: #1e3a5f;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #btn-vorschau:hover { background: #f0f4fa; }
+    #btn-vorschau:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Vorschau-Overlay */
+    #vorschau-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      align-items: flex-end;
+    }
+    #vorschau-overlay.open { display: flex; }
+    #vorschau-box {
+      background: white;
+      width: 100%;
+      max-height: 70vh;
+      border-radius: 10px 10px 0 0;
+      padding: 14px 14px 20px;
+      overflow-y: auto;
+    }
+    #vorschau-box h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+    #vorschau-text {
+      font-size: 12px;
+      line-height: 1.7;
+      color: #333;
+      white-space: pre-wrap;
+    }
+    #vorschau-close {
+      float: right;
+      font-size: 16px;
+      color: #888;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      line-height: 1;
+    }
+
+    /* Status-Toast */
+    #toast {
+      display: none;
+      position: fixed;
+      bottom: 65px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2e7d32;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      z-index: 200;
+      white-space: nowrap;
+    }
+    #toast.show { display: block; }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <h1>📋 Textbausteine</h1>
+  <p>Gutachten-Bibliothek</p>
+</div>
+
+<div id="search-bar">
+  <input type="text" id="search-input" placeholder="Suche nach Baustein..." autocomplete="off" />
+</div>
+
+<div id="filter-bar">
+  <button class="filter-btn active" data-kat="Alle">Alle</button>
+</div>
+
+<div id="baustein-list"></div>
+
+<div id="action-bar">
+  <button id="btn-vorschau" disabled>Vorschau</button>
+  <button id="btn-einfuegen" disabled>In Word einfügen</button>
+</div>
+
+<div id="vorschau-overlay">
+  <div id="vorschau-box">
+    <button id="vorschau-close">✕</button>
+    <h3 id="vorschau-titel"></h3>
+    <div id="vorschau-text"></div>
+  </div>
+</div>
+
+<div id="toast" id="toast">✓ Baustein eingefügt</div>
+
+<script>
+  let bausteine = [];
+  let selectedId = null;
+  let aktiveKat = "Alle";
+  let suchbegriff = "";
+
+  function ladeBausteine() {
+    bausteine = [
+      { "id": 1, "kategorie": "Einleitung", "titel": "Pünktlichkeit & Auftrag – keine weiteren SV", "text": "Der Kläger / Die Klägerin kommt pünktlich zur Untersuchung. Die Begutachtung erfolgt im Auftrag des Arbeits- und Sozialgerichts Wien. Es wurden keine weiteren Sachverständigengutachten in Auftrag gegeben." },
+      { "id": 2, "kategorie": "Einleitung", "titel": "Pünktlichkeit & Auftrag – mit weiteren SV", "text": "Der Kläger / Die Klägerin kommt pünktlich zur Untersuchung. Die Begutachtung erfolgt im Auftrag des Arbeits- und Sozialgerichts Wien. Es wurde weiters ein Sachverständigengutachten aus dem Gebiet der [FACHGEBIET] in Auftrag gegeben." },
+      { "id": 3, "kategorie": "Einleitung", "titel": "Zusammenschau-Einleitung vor Leistungskalkül", "text": "Somit ergibt sich in Zusammenschau der Aktenlage, der vorgelegten Befunde, der eigenen Untersuchung inklusive erhobenen Laborbefunden sowie der hier erhobenen Testpsychologie folgendes psychiatrisches Leistungskalkül:" },
+      { "id": 4, "kategorie": "Leistungskalkül – Zumutbar", "titel": "Zumutbar – Standardpaket", "text": "Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und durchschnittlichem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
+      { "id": 5, "kategorie": "Leistungskalkül – Zumutbar", "titel": "Zumutbar – niedrig-durchschnittliches geistiges Anforderungsprofil", "text": "Zumutbar sind:\n• Arbeiten mit niedrig-durchschnittlichem geistigen und durchschnittlichem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
+      { "id": 6, "kategorie": "Leistungskalkül – Zumutbar", "titel": "Zumutbar – niedriges psychisches Anforderungsprofil", "text": "Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen uneingeschränkt\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
+      { "id": 7, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Depression (1/2 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { "id": 8, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Depression + Angst (1/2 Tempo, Menschenansammlungen)", "text": "Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { "id": 9, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Alkohol (1/3 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 1/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar." },
+      { "id": 10, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket leichte Einschränkung (2/3 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Nachtarbeit (22:00-6:00)" },
+      { "id": 11, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Alkohol + Führung (2/3 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar.\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { "id": 12, "kategorie": "Prognose & Verlauf", "titel": "Prognose – keine Verschlechterung (Standardsatz)", "text": "Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig." },
+      { "id": 13, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung Depression (ca. 6 Wochen)", "text": "Mit einer Verbesserung des depressiven Zustandsbildes ist in ca. 6 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
+      { "id": 14, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung Schlafstörung (ca. 1 Woche)", "text": "Durch Etablierung eines Tag-Nacht-Rhythmus mit psychopharmakologischer Medikation und/oder verhaltenstherapeutischen Maßnahmen ist mit einer Verbesserung der Schlafstörung in ca. 1 Woche zu rechnen (mit hoher Wahrscheinlichkeit)." },
+      { "id": 15, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung ängstlich-depressiv (ca. 8 Wochen)", "text": "Durch psychopharmakologische Medikation ist mit einer Verbesserung des ängstlich-depressiven Zustandsbildes in ca. 8 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
+      { "id": 16, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung Alkohol-Agitation (ca. 3 Wochen)", "text": "Bei Adaptation und engmaschiger Kontrolle der bestehenden psychopharmakologischen Medikation mittels Medikamentenspiegelkontrollen, ergänzt durch Kontrollen auf fortbestehenden Alkoholkonsum und gegebenenfalls eine suchtspezifische Behandlung bis hin zur Entzugsbehandlung, ist mit hoher Wahrscheinlichkeit innerhalb von etwa drei Wochen mit einer Besserung des gereizten, agitierten Zustandsbildes zu rechnen." },
+      { "id": 17, "kategorie": "Prognose & Verlauf", "titel": "Zustand besteht mindestens seit Antragstellung", "text": "Der Zustand besteht mindestens seit Antragstellung." },
+      { "id": 18, "kategorie": "Prognose & Verlauf", "titel": "Zustand besteht mindestens seit Entziehung der Leistung", "text": "Der Zustand besteht mindestens seit Entziehung der Leistung." },
+      { "id": 19, "kategorie": "Sachverständige & Krankenstände", "titel": "Keine weiteren Sachverständigen notwendig", "text": "Bei der heutigen Untersuchung ergaben sich keine Hinweise auf die Notwendigkeit der Beiziehung weiterer Sachverständiger als die vom Gericht bereits bestellten." },
+      { "id": 20, "kategorie": "Sachverständige & Krankenstände", "titel": "Keine leidensbedingten Krankenstände", "text": "Unter Einhaltung des Leistungskalküls sind keine leidensbedingten Krankenstände zu erwarten." },
+      { "id": 21, "kategorie": "Testpsychologie", "titel": "SRSI – Beschwerdeüberhöhung vorhanden", "text": "Der Kennwert Ratio beträgt [WERT] und überschreitet den Referenzgrenzwert von 0,288, womit eine deutlich erhöhte Wahrscheinlichkeit bedeutsamer Antwortverzerrungen besteht. Falsch-Positive sind mit weniger als 5 % Wahrscheinlichkeit zu erwarten." },
+      { "id": 22, "kategorie": "Testpsychologie", "titel": "SRSI – praktisch sicherer Nachweis Beschwerdeüberhöhung", "text": "Der Kennwert Ratio beträgt [WERT] und überschreitet den Referenzgrenzwert von 0,288, womit ein praktisch sicherer Nachweis bedeutsamer Antwortverzerrungen besteht, falsch-positive Ergebnisse sind mit äußerst geringer Wahrscheinlichkeit zu erwarten." },
+      { "id": 23, "kategorie": "Testpsychologie", "titel": "SRSI – keine Beschwerdeüberhöhung", "text": "Der Kennwert Ratio beträgt [WERT] und unterschreitet den Referenzgrenzwert von 0,288, womit kein Hinweis auf eine bedeutsame Beschwerdenüberhöhung und -ausweitung besteht." },
+      { "id": 24, "kategorie": "Testpsychologie", "titel": "Verhaltensbeobachtung – Spannungsverhältnis zu Testergebnissen", "text": "In der Verhaltensbeobachtung lassen sich die erhobenen Werte der Testergebnisse nicht objektivieren und stehen in einem Spannungsverhältnis zur eigenen Untersuchung." },
+      { "id": 25, "kategorie": "Testpsychologie", "titel": "Compliance – Medikamentenspiegel unter Nachweisgrenze", "text": "Das verordnete Medikament [MEDIKAMENT] befand sich in der Medikamentenspiegelmessung unterhalb der Nachweisgrenze. Die Compliance sollte durch regelmäßige Medikamentenspiegelkontrollen überprüft werden." },
+      { "id": 26, "kategorie": "Empfehlungen", "titel": "Empfehlung – Psychotherapie + Medikation", "text": "Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig." },
+      { "id": 27, "kategorie": "Empfehlungen", "titel": "Empfehlung – suchtspezifische Betreuung Alkohol", "text": "Suchtspezifische Interventionen hinsichtlich eines schädlichen Alkoholkonsums sollten dem Kläger / der Klägerin regelhaft angeboten werden. Regelmäßige suchtspezifische Kontrollen, die Einhaltung der Abstinenz sowie die Reetablierung der antidepressiven Medikation zur Rückfallprophylaxe sind angezeigt." },
+      { "id": 28, "kategorie": "Empfehlungen", "titel": "Empfehlung – Benzodiazepin ausschleichen", "text": "Eine bedarfsweise Verordnung von Benzodiazepinen ist insbesondere bei emotional instabiler Persönlichkeitsstörung zu vermeiden. Ein kontrolliertes Ausschleichen der Benzodiazepine sollte erfolgen." },
+      { "id": 29, "kategorie": "Empfehlungen", "titel": "Empfehlung – Gruppenpsychotherapie", "text": "Psychotherapeutische Interventionen werden empfohlen, insbesondere regelmäßige gruppenpsychotherapeutische Behandlungen erscheinen im vorliegenden Fall zweckmäßig." }
+    ];
+    bausteineAnzeigen();
+    filterButtonsErstellen();
+  }
+
+  function filterButtonsErstellen() {
+    const kategorien = [...new Set(bausteine.map(b => b.kategorie))];
+    const bar = document.getElementById("filter-bar");
+    kategorien.forEach(kat => {
+      const btn = document.createElement("button");
+      btn.className = "filter-btn";
+      btn.dataset.kat = kat;
+      btn.textContent = kat;
+      btn.onclick = () => filterSetzen(kat, btn);
+      bar.appendChild(btn);
+    });
+  }
+
+  function filterSetzen(kat, btnEl) {
+    aktiveKat = kat;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btnEl.classList.add("active");
+    selectedId = null;
+    aktionButtons(false);
+    bausteineAnzeigen();
+  }
+
+  function bausteineAnzeigen() {
+    const liste = document.getElementById("baustein-list");
+    let gefiltert = bausteine.filter(b => {
+      const katOk = aktiveKat === "Alle" || b.kategorie === aktiveKat;
+      const suchOk = !suchbegriff ||
+        b.titel.toLowerCase().includes(suchbegriff) ||
+        b.text.toLowerCase().includes(suchbegriff);
+      return katOk && suchOk;
+    });
+
+    if (gefiltert.length === 0) {
+      liste.innerHTML = '<p class="no-results">Keine Bausteine gefunden.</p>';
+      return;
+    }
+
+    let html = "";
+    let letzteKat = "";
+    gefiltert.forEach(b => {
+      if (aktiveKat === "Alle" && b.kategorie !== letzteKat) {
+        html += `<div class="kategorie-label">${b.kategorie}</div>`;
+        letzteKat = b.kategorie;
+      }
+      const preview = b.text.replace(/\n/g, " ").substring(0, 100) + "…";
+      const sel = selectedId === b.id ? " selected" : "";
+      html += `
+        <div class="baustein-card${sel}" data-id="${b.id}" onclick="bausteinWaehlen(${b.id})">
+          <div class="baustein-titel">${b.titel}</div>
+          <div class="baustein-preview">${preview}</div>
+          <span class="baustein-tag">${b.kategorie}</span>
+        </div>`;
+    });
+    liste.innerHTML = html;
+  }
+
+  function bausteinWaehlen(id) {
+    selectedId = id;
+    document.querySelectorAll(".baustein-card").forEach(c => {
+      c.classList.toggle("selected", parseInt(c.dataset.id) === id);
+    });
+    aktionButtons(true);
+  }
+
+  function aktionButtons(aktiv) {
+    document.getElementById("btn-einfuegen").disabled = !aktiv;
+    document.getElementById("btn-vorschau").disabled = !aktiv;
+  }
+
+  function vorschauZeigen() {
+    const b = bausteine.find(x => x.id === selectedId);
+    if (!b) return;
+    document.getElementById("vorschau-titel").textContent = b.titel;
+    document.getElementById("vorschau-text").textContent = b.text;
+    document.getElementById("vorschau-overlay").classList.add("open");
+  }
+
+  function vorschauSchliessen() {
+    document.getElementById("vorschau-overlay").classList.remove("open");
+  }
+
+  async function inWordEinfuegen() {
+    const b = bausteine.find(x => x.id === selectedId);
+    if (!b) return;
+
+    try {
+      await Word.run(async ctx => {
+        const sel = ctx.document.getSelection();
+        sel.insertText(b.text, "Replace");
+        await ctx.sync();
+      });
+      toast("✓ Baustein eingefügt");
+    } catch(e) {
+      // Fallback wenn nicht in Word (z.B. Browser-Demo)
+      toast("Demo: Baustein würde eingefügt");
+    }
+  }
+
+  function toast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2200);
+  }
+
+  // Events
+  document.getElementById("search-input").addEventListener("input", e => {
+    suchbegriff = e.target.value.toLowerCase();
+    selectedId = null;
+    aktionButtons(false);
+    bausteigenAnzeigen();
+  });
+
+  // Typo fix
+  document.getElementById("search-input").addEventListener("input", e => {
+    suchbegriff = e.target.value.toLowerCase();
+    selectedId = null;
+    aktionButtons(false);
+    bausteineAnzeigen();
+  });
+
+  document.getElementById("btn-vorschau").addEventListener("click", vorschauZeigen);
+  document.getElementById("btn-einfuegen").addEventListener("click", inWordEinfuegen);
+  document.getElementById("vorschau-close").addEventListener("click", vorschauSchliessen);
+  document.getElementById("vorschau-overlay").addEventListener("click", e => {
+    if (e.target === document.getElementById("vorschau-overlay")) vorschauSchliessen();
+  });
+
+  // Doppelklick = direkt einfügen
+  document.getElementById("baustein-list").addEventListener("dblclick", e => {
+    const card = e.target.closest(".baustein-card");
+    if (card) inWordEinfuegen();
+  });
+
+  // Office init
+  if (typeof Office !== "undefined") {
+    Office.onReady(() => ladeBausteine());
+  } else {
+    ladeBausteine();
+  }
+</script>
+</body>
+</html>
