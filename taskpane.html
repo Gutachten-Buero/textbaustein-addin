@@ -8,378 +8,302 @@
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: "Segoe UI", sans-serif;
-      font-size: 13px;
-      background: #f5f5f5;
-      color: #1a1a1a;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Header */
-    #header {
-      background: #1e3a5f;
-      color: white;
-      padding: 10px 12px 8px;
-      flex-shrink: 0;
-    }
-    #header h1 {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-    #header p {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-top: 2px;
-    }
-
-    /* Search */
-    #search-bar {
-      padding: 8px 10px;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      flex-shrink: 0;
-    }
-    #search-input {
-      width: 100%;
-      padding: 6px 10px;
-      border: 1px solid #d0d0d0;
-      border-radius: 4px;
-      font-size: 12px;
-      font-family: inherit;
-      outline: none;
-    }
+    body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #f5f5f5; color: #1a1a1a; height: 100vh; display: flex; flex-direction: column; }
+    #header { background: #1e3a5f; color: white; padding: 10px 12px 8px; flex-shrink: 0; }
+    #header h1 { font-size: 14px; font-weight: 600; letter-spacing: 0.02em; }
+    #header p { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+    #search-bar { padding: 8px 10px; background: white; border-bottom: 1px solid #e0e0e0; flex-shrink: 0; }
+    #search-input { width: 100%; padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 4px; font-size: 12px; font-family: inherit; outline: none; }
     #search-input:focus { border-color: #1e3a5f; }
+    #baustein-list { flex: 1; overflow-y: auto; padding: 6px 8px 60px; }
 
-    /* Kategorie-Filter */
-    #filter-bar {
-      padding: 6px 10px;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-    }
-    .filter-btn {
-      font-size: 11px;
-      padding: 3px 8px;
-      border: 1px solid #c8c8c8;
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
-      white-space: nowrap;
-      font-family: inherit;
-      color: #444;
-    }
-    .filter-btn:hover { background: #f0f0f0; }
-    .filter-btn.active {
-      background: #1e3a5f;
-      border-color: #1e3a5f;
-      color: white;
-    }
+    /* Oberkategorie (dunkelblau) */
+    .kat-group { margin-bottom: 5px; border-radius: 6px; overflow: hidden; border: 1px solid #dde3ec; }
+    .kat-header { display: flex; align-items: center; justify-content: space-between; padding: 9px 10px; background: #1e3a5f; color: white; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .kat-header:hover, .kat-header.open { background: #16304f; }
+    .kat-header-left { display: flex; align-items: baseline; gap: 7px; }
+    .kat-num { font-size: 11px; font-weight: 700; opacity: 0.75; min-width: 16px; }
+    .kat-title { font-size: 12px; font-weight: 600; }
+    .kat-count { font-size: 10px; opacity: 0.6; margin-left: 4px; }
+    .kat-arrow { font-size: 10px; opacity: 0.8; transition: transform 0.2s; flex-shrink: 0; }
+    .kat-header.open .kat-arrow { transform: rotate(180deg); }
+    .kat-body { display: none; background: #eef1f7; padding: 4px 5px; }
+    .kat-body.open { display: block; }
 
-    /* Baustein-Liste */
-    #baustein-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 8px 60px;
-    }
+    /* Unterkategorie (mittelblau) */
+    .sub-group { margin-bottom: 4px; border-radius: 5px; overflow: hidden; border: 1px solid #c8d4e8; }
+    .sub-header { display: flex; align-items: center; justify-content: space-between; padding: 7px 9px; background: #2e5480; color: white; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .sub-header:hover, .sub-header.open { background: #244872; }
+    .sub-header-left { display: flex; align-items: baseline; gap: 6px; }
+    .sub-title { font-size: 11px; font-weight: 600; }
+    .sub-count { font-size: 10px; opacity: 0.6; margin-left: 3px; }
+    .sub-arrow { font-size: 9px; opacity: 0.8; transition: transform 0.2s; flex-shrink: 0; }
+    .sub-header.open .sub-arrow { transform: rotate(180deg); }
+    .sub-body { display: none; background: #f5f7fb; padding: 4px 5px; }
+    .sub-body.open { display: block; }
 
-    .kategorie-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #888;
-      padding: 10px 4px 4px;
-      font-weight: 600;
-    }
+    /* Bausteine */
+    .baustein-card { background: white; border: 1px solid #e8e8e8; border-radius: 5px; margin-bottom: 4px; padding: 7px 9px 6px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
+    .baustein-card:last-child { margin-bottom: 0; }
+    .baustein-card:hover { border-color: #1e3a5f; box-shadow: 0 1px 5px rgba(30,58,95,0.1); }
+    .baustein-card.selected { border-color: #1e3a5f; background: #f0f4fa; }
+    .baustein-titel { font-weight: 600; font-size: 11px; color: #1a1a1a; margin-bottom: 2px; }
+    .baustein-preview { font-size: 10px; color: #666; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .empty-hint { font-size: 11px; color: #aaa; font-style: italic; padding: 6px 5px; }
+    .no-results { text-align: center; color: #999; padding: 30px 20px; font-size: 12px; }
 
-    .baustein-card {
-      background: white;
-      border: 1px solid #e8e8e8;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      padding: 10px 10px 8px;
-      cursor: pointer;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .baustein-card:hover {
-      border-color: #1e3a5f;
-      box-shadow: 0 1px 6px rgba(30,58,95,0.12);
-    }
-    .baustein-card.selected {
-      border-color: #1e3a5f;
-      background: #f0f4fa;
-    }
-
-    .baustein-titel {
-      font-weight: 600;
-      font-size: 12px;
-      color: #1a1a1a;
-      margin-bottom: 4px;
-    }
-    .baustein-preview {
-      font-size: 11px;
-      color: #666;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .baustein-tag {
-      display: inline-block;
-      font-size: 10px;
-      padding: 2px 6px;
-      background: #eef2f7;
-      color: #1e3a5f;
-      border-radius: 3px;
-      margin-top: 5px;
-    }
-
-    .no-results {
-      text-align: center;
-      color: #999;
-      padding: 30px 20px;
-      font-size: 12px;
-    }
-
-    /* Action-Bar unten */
-    #action-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: white;
-      border-top: 1px solid #e0e0e0;
-      padding: 8px 10px;
-      display: flex;
-      gap: 6px;
-    }
-
-    #btn-einfuegen {
-      flex: 1;
-      padding: 8px;
-      background: #1e3a5f;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-    }
+    #action-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e0e0e0; padding: 8px 10px; display: flex; gap: 6px; }
+    #btn-einfuegen { flex: 1; padding: 8px; background: #1e3a5f; color: white; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
     #btn-einfuegen:hover { background: #16304f; }
-    #btn-einfuegen:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
-    #btn-vorschau {
-      padding: 8px 12px;
-      background: white;
-      color: #1e3a5f;
-      border: 1px solid #1e3a5f;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      font-family: inherit;
-    }
+    #btn-einfuegen:disabled { background: #aaa; cursor: not-allowed; }
+    #btn-vorschau { padding: 8px 12px; background: white; color: #1e3a5f; border: 1px solid #1e3a5f; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit; }
     #btn-vorschau:hover { background: #f0f4fa; }
     #btn-vorschau:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* Vorschau-Overlay */
-    #vorschau-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 100;
-      align-items: flex-end;
-    }
+    #vorschau-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: flex-end; }
     #vorschau-overlay.open { display: flex; }
-    #vorschau-box {
-      background: white;
-      width: 100%;
-      max-height: 70vh;
-      border-radius: 10px 10px 0 0;
-      padding: 14px 14px 20px;
-      overflow-y: auto;
-    }
-    #vorschau-box h3 {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1e3a5f;
-      margin-bottom: 8px;
-    }
-    #vorschau-text {
-      font-size: 12px;
-      line-height: 1.7;
-      color: #333;
-      white-space: pre-wrap;
-    }
-    #vorschau-close {
-      float: right;
-      font-size: 16px;
-      color: #888;
-      cursor: pointer;
-      border: none;
-      background: none;
-      padding: 0;
-      line-height: 1;
-    }
-
-    /* Status-Toast */
-    #toast {
-      display: none;
-      position: fixed;
-      bottom: 65px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2e7d32;
-      color: white;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      z-index: 200;
-      white-space: nowrap;
-    }
+    #vorschau-box { background: white; width: 100%; max-height: 70vh; border-radius: 10px 10px 0 0; padding: 14px 14px 20px; overflow-y: auto; }
+    #vorschau-box h3 { font-size: 13px; font-weight: 600; color: #1e3a5f; margin-bottom: 8px; }
+    #vorschau-text { font-size: 12px; line-height: 1.7; color: #333; white-space: pre-wrap; }
+    #vorschau-close { float: right; font-size: 16px; color: #888; cursor: pointer; border: none; background: none; padding: 0; line-height: 1; }
+    #toast { display: none; position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%); background: #2e7d32; color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; z-index: 200; white-space: nowrap; }
     #toast.show { display: block; }
   </style>
 </head>
 <body>
-
-<div id="header">
-  <h1>📋 Textbausteine</h1>
-  <p>Gutachten-Bibliothek</p>
-</div>
-
-<div id="search-bar">
-  <input type="text" id="search-input" placeholder="Suche nach Baustein..." autocomplete="off" />
-</div>
-
-<div id="filter-bar">
-  <button class="filter-btn active" data-kat="Alle">Alle</button>
-</div>
-
+<div id="header"><h1>📋 Textbausteine</h1><p>Gutachten-Bibliothek</p></div>
+<div id="search-bar"><input type="text" id="search-input" placeholder="Suche nach Baustein..." autocomplete="off" /></div>
 <div id="baustein-list"></div>
-
 <div id="action-bar">
   <button id="btn-vorschau" disabled>Vorschau</button>
   <button id="btn-einfuegen" disabled>In Word einfügen</button>
 </div>
-
-<div id="vorschau-overlay">
-  <div id="vorschau-box">
-    <button id="vorschau-close">✕</button>
-    <h3 id="vorschau-titel"></h3>
-    <div id="vorschau-text"></div>
-  </div>
-</div>
-
-<div id="toast" id="toast">✓ Baustein eingefügt</div>
+<div id="vorschau-overlay"><div id="vorschau-box"><button id="vorschau-close">✕</button><h3 id="vorschau-titel"></h3><div id="vorschau-text"></div></div></div>
+<div id="toast">✓ Baustein eingefügt</div>
 
 <script>
   let bausteine = [];
   let selectedId = null;
-  let aktiveKat = "Alle";
   let suchbegriff = "";
+  let offeneKats = new Set();
+  let offeneSubs = new Set();
+
+  // Struktur: Oberkategorien → Unterkategorien → Bausteine (via subkat-Feld)
+  const struktur = [
+    {
+      nr: 1, titel: "Befund & Einschränkungen", key: "kat1",
+      subs: [
+        { titel: "A. Einleitung", key: "sub1a", ids: [101,102,103] },
+        { titel: "B. Zumutbar – Standard", key: "sub1b", ids: [110,111] },
+        { titel: "B. Zumutbar – Varianten", key: "sub1c", ids: [112,113,114,115,116,117,118] },
+        { titel: "C. Ausgeschlossen – 2/3 Tempo", key: "sub1d", ids: [120,121,122,123,128,134,140,145,143,129] },
+        { titel: "C. Ausgeschlossen – 1/2 Tempo", key: "sub1e", ids: [126,139,132,135,144,147] },
+        { titel: "C. Ausgeschlossen – 1/3 Tempo", key: "sub1f", ids: [125,124,127,137] },
+        { titel: "C. Ausgeschlossen – Normales Tempo", key: "sub1g", ids: [138,141,142,136] },
+        { titel: "C. Ausgeschlossen – Sonderpakete (PTBS/Alkohol)", key: "sub1h", ids: [133,146] },
+        { titel: "D. Zustand seit", key: "sub1i", ids: [130,131] }
+      ]
+    },
+    {
+      nr: 2, titel: "Vergleichsgutachten / Leidenszustand", key: "kat2",
+      subs: [
+        { titel: "Verbesserung", key: "sub2a", ids: [201,202] },
+        { titel: "Sonderfälle", key: "sub2b", ids: [203,204] }
+      ]
+    },
+    {
+      nr: 3, titel: "Verschlechterungsprognose", key: "kat3",
+      subs: [
+        { titel: "Standard-Varianten", key: "sub3a", ids: [301,302,303] },
+        { titel: "Mit Zusatzempfehlung", key: "sub3b", ids: [304] }
+      ]
+    },
+    {
+      nr: 4, titel: "Besserungsmöglichkeiten", key: "kat4",
+      subs: [
+        { titel: "Kurzfristig (1–2 Wochen)", key: "sub4a", ids: [403,407,412] },
+        { titel: "Mittelfristig (6–8 Wochen)", key: "sub4b", ids: [401,402,404,405,406,408] },
+        { titel: "Längerfristig (8–12 Wochen)", key: "sub4c", ids: [409,410,411,414] },
+        { titel: "Agoraphobie / KVT", key: "sub4d", ids: [415] },
+        { titel: "Compliance-Kontrolle", key: "sub4e", ids: [413] }
+      ]
+    },
+    {
+      nr: 5, titel: "Notwendigkeit Sachverständige", key: "kat5",
+      subs: [
+        { titel: "Keine weiteren SV", key: "sub5a", ids: [501] },
+        { titel: "Weitere SV notwendig / angeregt", key: "sub5b", ids: [502,503] }
+      ]
+    },
+    {
+      nr: 6, titel: "Krankenstände", key: "kat6",
+      subs: [
+        { titel: "Prognose Krankenstände", key: "sub6a", ids: [601] }
+      ]
+    },
+    {
+      nr: 7, titel: "Reisefähigkeit", key: "kat7", subs: []
+    },
+    {
+      nr: 8, titel: "Massenbeförderung / Fahrtendienst", key: "kat8", subs: []
+    }
+  ];
 
   function ladeBausteine() {
     bausteine = [
-      { "id": 1, "kategorie": "Einleitung", "titel": "Pünktlichkeit & Auftrag – keine weiteren SV", "text": "Der Kläger / Die Klägerin kommt pünktlich zur Untersuchung. Die Begutachtung erfolgt im Auftrag des Arbeits- und Sozialgerichts Wien. Es wurden keine weiteren Sachverständigengutachten in Auftrag gegeben." },
-      { "id": 2, "kategorie": "Einleitung", "titel": "Pünktlichkeit & Auftrag – mit weiteren SV", "text": "Der Kläger / Die Klägerin kommt pünktlich zur Untersuchung. Die Begutachtung erfolgt im Auftrag des Arbeits- und Sozialgerichts Wien. Es wurde weiters ein Sachverständigengutachten aus dem Gebiet der [FACHGEBIET] in Auftrag gegeben." },
-      { "id": 3, "kategorie": "Einleitung", "titel": "Zusammenschau-Einleitung vor Leistungskalkül", "text": "Somit ergibt sich in Zusammenschau der Aktenlage, der vorgelegten Befunde, der eigenen Untersuchung inklusive erhobenen Laborbefunden sowie der hier erhobenen Testpsychologie folgendes psychiatrisches Leistungskalkül:" },
-      { "id": 4, "kategorie": "Leistungskalkül – Zumutbar", "titel": "Zumutbar – Standardpaket", "text": "Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und durchschnittlichem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
-      { "id": 5, "kategorie": "Leistungskalkül – Zumutbar", "titel": "Zumutbar – niedrig-durchschnittliches geistiges Anforderungsprofil", "text": "Zumutbar sind:\n• Arbeiten mit niedrig-durchschnittlichem geistigen und durchschnittlichem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
-      { "id": 6, "kategorie": "Leistungskalkül – Zumutbar", "titel": "Zumutbar – niedriges psychisches Anforderungsprofil", "text": "Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen uneingeschränkt\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
-      { "id": 7, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Depression (1/2 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
-      { "id": 8, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Depression + Angst (1/2 Tempo, Menschenansammlungen)", "text": "Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
-      { "id": 9, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Alkohol (1/3 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 1/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar." },
-      { "id": 10, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket leichte Einschränkung (2/3 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Nachtarbeit (22:00-6:00)" },
-      { "id": 11, "kategorie": "Leistungskalkül – Ausgeschlossen", "titel": "Ausschlüsse – Paket Alkohol + Führung (2/3 Tempo)", "text": "Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar.\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00-6:00)\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
-      { "id": 12, "kategorie": "Prognose & Verlauf", "titel": "Prognose – keine Verschlechterung (Standardsatz)", "text": "Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig." },
-      { "id": 13, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung Depression (ca. 6 Wochen)", "text": "Mit einer Verbesserung des depressiven Zustandsbildes ist in ca. 6 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
-      { "id": 14, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung Schlafstörung (ca. 1 Woche)", "text": "Durch Etablierung eines Tag-Nacht-Rhythmus mit psychopharmakologischer Medikation und/oder verhaltenstherapeutischen Maßnahmen ist mit einer Verbesserung der Schlafstörung in ca. 1 Woche zu rechnen (mit hoher Wahrscheinlichkeit)." },
-      { "id": 15, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung ängstlich-depressiv (ca. 8 Wochen)", "text": "Durch psychopharmakologische Medikation ist mit einer Verbesserung des ängstlich-depressiven Zustandsbildes in ca. 8 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
-      { "id": 16, "kategorie": "Prognose & Verlauf", "titel": "Prognose – Besserung Alkohol-Agitation (ca. 3 Wochen)", "text": "Bei Adaptation und engmaschiger Kontrolle der bestehenden psychopharmakologischen Medikation mittels Medikamentenspiegelkontrollen, ergänzt durch Kontrollen auf fortbestehenden Alkoholkonsum und gegebenenfalls eine suchtspezifische Behandlung bis hin zur Entzugsbehandlung, ist mit hoher Wahrscheinlichkeit innerhalb von etwa drei Wochen mit einer Besserung des gereizten, agitierten Zustandsbildes zu rechnen." },
-      { "id": 17, "kategorie": "Prognose & Verlauf", "titel": "Zustand besteht mindestens seit Antragstellung", "text": "Der Zustand besteht mindestens seit Antragstellung." },
-      { "id": 18, "kategorie": "Prognose & Verlauf", "titel": "Zustand besteht mindestens seit Entziehung der Leistung", "text": "Der Zustand besteht mindestens seit Entziehung der Leistung." },
-      { "id": 19, "kategorie": "Sachverständige & Krankenstände", "titel": "Keine weiteren Sachverständigen notwendig", "text": "Bei der heutigen Untersuchung ergaben sich keine Hinweise auf die Notwendigkeit der Beiziehung weiterer Sachverständiger als die vom Gericht bereits bestellten." },
-      { "id": 20, "kategorie": "Sachverständige & Krankenstände", "titel": "Keine leidensbedingten Krankenstände", "text": "Unter Einhaltung des Leistungskalküls sind keine leidensbedingten Krankenstände zu erwarten." },
-      { "id": 21, "kategorie": "Testpsychologie", "titel": "SRSI – Beschwerdeüberhöhung vorhanden", "text": "Der Kennwert Ratio beträgt [WERT] und überschreitet den Referenzgrenzwert von 0,288, womit eine deutlich erhöhte Wahrscheinlichkeit bedeutsamer Antwortverzerrungen besteht. Falsch-Positive sind mit weniger als 5 % Wahrscheinlichkeit zu erwarten." },
-      { "id": 22, "kategorie": "Testpsychologie", "titel": "SRSI – praktisch sicherer Nachweis Beschwerdeüberhöhung", "text": "Der Kennwert Ratio beträgt [WERT] und überschreitet den Referenzgrenzwert von 0,288, womit ein praktisch sicherer Nachweis bedeutsamer Antwortverzerrungen besteht, falsch-positive Ergebnisse sind mit äußerst geringer Wahrscheinlichkeit zu erwarten." },
-      { "id": 23, "kategorie": "Testpsychologie", "titel": "SRSI – keine Beschwerdeüberhöhung", "text": "Der Kennwert Ratio beträgt [WERT] und unterschreitet den Referenzgrenzwert von 0,288, womit kein Hinweis auf eine bedeutsame Beschwerdenüberhöhung und -ausweitung besteht." },
-      { "id": 24, "kategorie": "Testpsychologie", "titel": "Verhaltensbeobachtung – Spannungsverhältnis zu Testergebnissen", "text": "In der Verhaltensbeobachtung lassen sich die erhobenen Werte der Testergebnisse nicht objektivieren und stehen in einem Spannungsverhältnis zur eigenen Untersuchung." },
-      { "id": 25, "kategorie": "Testpsychologie", "titel": "Compliance – Medikamentenspiegel unter Nachweisgrenze", "text": "Das verordnete Medikament [MEDIKAMENT] befand sich in der Medikamentenspiegelmessung unterhalb der Nachweisgrenze. Die Compliance sollte durch regelmäßige Medikamentenspiegelkontrollen überprüft werden." },
-      { "id": 26, "kategorie": "Empfehlungen", "titel": "Empfehlung – Psychotherapie + Medikation", "text": "Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig." },
-      { "id": 27, "kategorie": "Empfehlungen", "titel": "Empfehlung – suchtspezifische Betreuung Alkohol", "text": "Suchtspezifische Interventionen hinsichtlich eines schädlichen Alkoholkonsums sollten dem Kläger / der Klägerin regelhaft angeboten werden. Regelmäßige suchtspezifische Kontrollen, die Einhaltung der Abstinenz sowie die Reetablierung der antidepressiven Medikation zur Rückfallprophylaxe sind angezeigt." },
-      { "id": 28, "kategorie": "Empfehlungen", "titel": "Empfehlung – Benzodiazepin ausschleichen", "text": "Eine bedarfsweise Verordnung von Benzodiazepinen ist insbesondere bei emotional instabiler Persönlichkeitsstörung zu vermeiden. Ein kontrolliertes Ausschleichen der Benzodiazepine sollte erfolgen." },
-      { "id": 29, "kategorie": "Empfehlungen", "titel": "Empfehlung – Gruppenpsychotherapie", "text": "Psychotherapeutische Interventionen werden empfohlen, insbesondere regelmäßige gruppenpsychotherapeutische Behandlungen erscheinen im vorliegenden Fall zweckmäßig." }
+      { id:101, titel:"Einleitung – pünktlich, keine weiteren SV", text:"Der Kläger / Die Klägerin kommt pünktlich zur Untersuchung. Die Begutachtung erfolgt im Auftrag des Arbeits- und Sozialgerichts Wien. Es wurden keine weiteren Sachverständigengutachten in Auftrag gegeben." },
+      { id:102, titel:"Einleitung – pünktlich, mit weiteren SV", text:"Der Kläger / Die Klägerin kommt pünktlich zur Untersuchung. Die Begutachtung erfolgt im Auftrag des Arbeits- und Sozialgerichts Wien. Es wurde weiters ein Sachverständigengutachten aus dem Gebiet der [FACHGEBIET] in Auftrag gegeben." },
+      { id:103, titel:"Zusammenschau-Einleitung vor Leistungskalkül", text:"Somit ergibt sich in Zusammenschau der Aktenlage, der vorgelegten Befunde, der eigenen Untersuchung inklusive erhobenen Laborbefunden sowie der hier erhobenen Testpsychologie folgendes psychiatrisches Leistungskalkül:" },
+      { id:110, titel:"Zumutbar – Standardpaket (durchschnittlich, ganztägig)", text:"Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und durchschnittlichem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
+      { id:111, titel:"Zumutbar – Standardpaket + Nachtarbeit", text:"Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und durchschnittlichem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr\n• Nachtarbeit (22:00–6:00)" },
+      { id:112, titel:"Zumutbar – niedrig/niedrig, halbtägig", text:"Zumutbar sind:\n• Arbeiten mit niedrigem geistigen und niedrigem psychischen Anforderungsprofil, mindestens halbtägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Arbeiten, die eine niedrige Teamfähigkeit verlangen\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr\n• Nachtarbeit (22:00–6:00)" },
+      { id:113, titel:"Zumutbar – niedrig/niedrig, ganztägig, kleines Team", text:"Zumutbar sind:\n• Arbeiten mit niedrigem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit für kleine Teams gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
+      { id:114, titel:"niedrig geistig · ⌀ psychisch + Nacht", text:"Zumutbar sind:\n• Arbeiten mit niedrigem geistigen und durchschnittlichem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr\n• Nachtarbeit (22:00–6:00)" },
+      { id:115, titel:"⌀ geistig · niedrig psychisch + Nacht", text:"Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr\n• Nachtarbeit (22:00–6:00)" },
+      { id:116, titel:"Zumutbar – niedrig/niedrig, ganztägig + Nacht", text:"Zumutbar sind:\n• Arbeiten mit niedrigem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr\n• Nachtarbeit (22:00–6:00)" },
+      { id:117, titel:"[Zwang] ⌀ geistig · ⌀ psychisch · halbtägig ab 14:00", text:"Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und durchschnittlichem psychischen Anforderungsprofil, mindestens halbtägig ab 14:00, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend" },
+      { id:118, titel:"⌀ geistig · niedrig psychisch [kein Nacht]", text:"Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit gegeben\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
+      { id:120, titel:"Ausschlüsse – 2/3 Tempo + Nacht", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Nachtarbeit (22:00–6:00)" },
+      { id:121, titel:"Ausschlüsse – 2/3 Tempo + Akkord", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Akkordarbeit" },
+      { id:122, titel:"2/3 Tempo · Führung + Akkord + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:123, titel:"Ausschlüsse – 2/3 Tempo + Führung + Akkord + Lenken + Nacht + Exposition + Alkohol", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar.\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:128, titel:"2/3 Tempo · Akkord + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:134, titel:"2/3 Tempo · Lenken + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:140, titel:"Ausschlüsse – 2/3 Tempo + Führung", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten mit Führungsaufgaben" },
+      { id:145, titel:"2/3 Tempo · Führung + Lenken + Nacht", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten mit Führungsaufgaben\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)" },
+      { id:143, titel:"Ausschlüsse – 2/3 Tempo + Menschenansammlungen + Führung + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:129, titel:"Ausschlüsse – 2/3 Tempo + Menschenansammlungen + Führung + Akkord + Lenken + Exposition (ohne Nacht)", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:126, titel:"Ausschlüsse – 1/2 Tempo + Menschenansammlungen + Führung + Akkord + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:139, titel:"1/2 Tempo · Akkord + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:132, titel:"Ausschlüsse – 1/2 Tempo + Menschenansammlungen + Führung + Akkord + Lenken + Exposition (ohne Nacht)", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:135, titel:"Ausschlüsse – 1/2 Tempo + Menschenansammlungen + Führung + Akkord + Lenken + Exposition + Alkohol (ohne Nacht)", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar." },
+      { id:144, titel:"Ausschlüsse – 1/2 Tempo + Menschenansammlungen + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:147, titel:"Ausschlüsse – 1/2 Tempo + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:125, titel:"Ausschlüsse – 1/3 Tempo + Menschenansammlungen + Führung + Akkord + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 1/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:124, titel:"Ausschlüsse – 1/3 Tempo + Menschenansammlungen + Führung + Akkord + Lenken + Nacht + Exposition + Alkohol", text:"Ausgeschlossen sind:\n• Mehr als nur 1/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar." },
+      { id:127, titel:"Ausschlüsse – 1/3 Tempo + Menschenansammlungen + Führung + Akkord", text:"Ausgeschlossen sind:\n• Mehr als nur 1/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit" },
+      { id:137, titel:"Ausschlüsse – 1/3 Tempo + Menschenansammlungen + Akkord + Lenken + Nacht + Exposition + Alkohol (ohne Führung)", text:"Ausgeschlossen sind:\n• Mehr als nur 1/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Arbeiten im alkoholnahen Umfeld" },
+      { id:138, titel:"Ausschlüsse – normales Tempo + Menschenansammlungen + Führung + Akkord + Alkohol + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar.\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:141, titel:"Ausschlüsse – normales Tempo + Führung + Akkord + Lenken + Exposition (ohne Nacht)", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:142, titel:"Norm. Tempo · Führung + Akkord + Lenken + Nacht + Exp.", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:136, titel:"Ausschlüsse – normales Tempo + Zwangsstörung (Körperflüssigkeiten, Toiletten, Müll)", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00–6:00)\n• Arbeiten mit unmittelbarem oder sehr wahrscheinlichem Kontakt zu Körperflüssigkeiten sind nicht möglich.\n• Arbeiten sind nicht möglich, wenn die Nutzung öffentlicher Toiletten zwingend vorausgesetzt ist und keine private oder betriebliche Sanitäranlage zur Verfügung steht.\n• Tätigkeiten, die überwiegend mit dem Umgang mit Müll oder Abfall einhergehen, einschließlich Sammeln, Sortieren, Transportieren oder Entsorgen von Abfällen, sind nicht möglich." },
+      { id:133, titel:"Ausschlüsse – 2/3 Tempo + Menschenansammlungen + Führung + Akkord + Nacht + Exposition (ohne Lenken)", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:146, titel:"Ausschlüsse – 2/3 Tempo + Menschenansammlungen + Akkord + Lenken + Nacht + Exposition (ohne Führung)", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:130, titel:"Zustand besteht mindestens seit Antragstellung", text:"Der Zustand besteht mindestens seit Antragstellung." },
+      { id:131, titel:"Zustand besteht mindestens seit Entziehung der Leistung", text:"Der Zustand besteht mindestens seit Entziehung der Leistung." },
+      { id:201, titel:"Verbesserung seit Vorgutachten – kalkülsrelevant", text:"Es ergeben sich im Vergleich zum [DATUM] kalkülsrelevante Verbesserungen im Sinne einer Besserung der [SYMPTOMATIK]. In der Zusammenschau der hier vorgenommenen Untersuchungen einschließlich Beschwerdevalidierung und Laboruntersuchung ergeben sich im Rahmen der Plausibilitätsprüfung der durchgeführten Begutachtung relevante Verbesserungen im Bereich des Affekts, der Schwingungsfähigkeit und der Stimmung." },
+      { id:202, titel:"Wesentliche Besserung seit Leistungsgewährung", text:"Seit der rechtskräftigen Gewährung vom [DATUM] hat sich das Leistungskalkül wesentlich gebessert." },
+      { id:203, titel:"Frühere absolute Arbeitsunfähigkeit – kein Leistungskalkül erstellbar", text:"Zum Zeitpunkt des Gewährungsgutachtens konnte kein Restleistungskalkül erstellt werden. Aufgrund der Komplexität des damaligen Beschwerdebildes kann auch rückwirkend kein Leistungskalkül erstellt werden." },
+      { id:204, titel:"Gewährung nicht aus psychiatrischen Gründen", text:"Die Gewährung von Rehabilitationsgeld erfolgte nicht aus psychiatrischen Gründen." },
+      { id:301, titel:"Keine Verschlechterung in 18 Monaten (Standardsatz)", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig." },
+      { id:302, titel:"Keine Verschlechterung – Kurzversion (ohne Empfehlungen)", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre." },
+      { id:303, titel:"Keine Verschlechterung – Empfehlungen bei Bedarf (abgeschwächt)", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind bei Bedarf notwendig." },
+      { id:304, titel:"Keine Verschlechterung + kognitive Verhaltenstherapie notwendig", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig. Des Weiteren ist eine störungsspezifische kognitive Verhaltenstherapie im Einzel- oder Gruppensetting einschließlich Exposition notwendig." },
+      { id:401, titel:"Besserung Depression / subdepressiv – ca. 6 Wochen", text:"Mit einer Verbesserung des depressiven Zustandsbildes ist in ca. 6 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
+      { id:402, titel:"Besserung ängstlich-depressiv – ca. 8 Wochen", text:"Durch psychopharmakologische Medikation ist mit einer Verbesserung des ängstlich-depressiven Zustandsbildes in ca. 8 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
+      { id:403, titel:"Besserung Schlafstörung / Tag-Nacht-Rhythmus – ca. 1 Woche", text:"Durch Etablierung eines Tag-Nacht-Rhythmus mit psychopharmakologischer Medikation und/oder verhaltenstherapeutischen Maßnahmen ist mit einer Verbesserung der Schlafstörung in ca. 1 Woche zu rechnen (mit sehr hoher Wahrscheinlichkeit)." },
+      { id:404, titel:"Besserung gereizt/subdepressiv (Medikamenteneinnahme) – ca. 6 Wochen", text:"Durch Einnahme der verordneten psychopharmakologischen Medikation ist mit einer Verbesserung des gereizt/subdepressiven Zustandsbildes in ca. 6 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
+      { id:405, titel:"Suchtspezifische Maßnahmen Alkohol", text:"Suchtspezifische Interventionen hinsichtlich eines schädlichen Alkoholkonsums sollten dem Kläger / der Klägerin regelhaft angeboten werden. Regelmäßige suchtspezifische Kontrollen, die Einhaltung der Abstinenz sowie die Reetablierung der antidepressiven Medikation zur Rückfallprophylaxe sind angezeigt." },
+      { id:406, titel:"Besserung Angst/Panik + Depression – ca. 6 Wochen", text:"Durch eine konsequente, leitliniengerechte psychopharmakologische Behandlung mit adäquater Dosistitration und ausreichender Einnahmetreue ist mit einer Besserung des Angst- und Paniksyndroms sowie der depressiven Symptomatik innerhalb von etwa 6 Wochen zu rechnen, wobei eine klinisch relevante Reduktion der subjektiven Belastung mit hoher Wahrscheinlichkeit zu erwarten ist." },
+      { id:407, titel:"Besserung durch Medikamentenreduktion (Überdosierung) – 1–2 Wochen", text:"Durch Reduktion des Psychopharmakons [MEDIKAMENT], welches in der Spiegelmessung eine deutliche Überdosierung ergab, ist mit einer Besserung von Unruhezuständen in 1 bis 2 Wochen zu rechnen." },
+      { id:408, titel:"Hinweis – Benzodiazepine nicht als Dauermedikation", text:"Benzodiazepine sollten nicht als Dauermedikation verordnet werden. Durch regelmäßige Medikamentenspiegelkontrollen zur Kontrolle der Compliance und zur Dosisfindung kann sich das ängstliche Zustandsbild in ca. 6 Wochen verbessern und dadurch die Benzodiazepinmedikation abgesetzt werden." },
+      { id:409, titel:"Besserung Depression + Alkohol – 6 bis 12 Wochen", text:"Durch eine leitliniengerechte psychiatrische Behandlung, insbesondere durch eine konsequent durchgeführte antidepressive Psychopharmakotherapie in adäquater Dosierung sowie begleitende psychotherapeutische Interventionen, ist mit einer relevanten Besserung des depressiven Zustandsbildes zu rechnen. Bei ausreichender Therapieadhärenz ist innerhalb von etwa 6 bis 12 Wochen mit einer klinisch relevanten Reduktion der depressiven Symptomatik zu rechnen, mit hoher Wahrscheinlichkeit. Unter zusätzlicher Durchführung motivierender und kognitiv verhaltenstherapeutischer Interventionen zur Konsumreduktion von Alkohol bis hin zur Abstinenz ist innerhalb von etwa 3 bis 12 Wochen mit einer relevanten Verbesserung der Gesamtbelastung zu rechnen." },
+      { id:410, titel:"Besserung Zwangsstörung – Verhaltenstherapie ca. 12 Wochen", text:"Verbesserungsmöglichkeiten sind vor allem durch verhaltenstherapeutische Maßnahmen innerhalb von etwa 12 Wochen zu erwarten. Es sollte eine störungsspezifische kognitive Verhaltenstherapie im Einzel- oder Gruppensetting einschließlich Exposition durchgeführt werden. Durch die Kombination einer Anpassung der psychopharmakologischen Medikation mit verhaltenstherapeutischen Interventionen sowie Exposition im Rahmen beruflicher Tätigkeit ist mit einer weiteren Reduktion der gegenwärtig noch ausgeschlossenen Tätigkeiten zu rechnen." },
+      { id:411, titel:"Besserung subdepressiv + Nikotin (Bupropion) – 8 bis 12 Wochen", text:"Unter gezielter kardiologischer Beobachtung kann aus psychiatrischer Sicht eine antidepressive Medikation mit Bupropion begonnen werden. Als Nebeneffekt reduziert diese Medikation das Rauchverlangen. Eine suchtspezifische verhaltenstherapeutische Therapie hinsichtlich der Nikotinabhängigkeit erscheint sinnvoll. Durch die genannten Maßnahmen und eine begleitende Schlafhygiene, unterstützt durch kognitiv verhaltenstherapeutische Maßnahmen und Psychoedukation, ist mit einer Verbesserung des Zustandsbildes in etwa 8 bis 12 Wochen zu rechnen." },
+      { id:412, titel:"Besserung ADHS-Symptomatik (Medikamenteneinnahme) – ca. 1 Woche", text:"Durch Einnahme der verordneten psychopharmakologischen Medikation ist mit einer Verbesserung der ADHS-Symptomatik in ca. einer Woche zu rechnen (mit hoher Wahrscheinlichkeit). Durch Etablierung eines Tag-Nacht-Rhythmus und rechtzeitige Einnahme der verordneten psychopharmakologischen Medikation und verhaltenstherapeutische Maßnahmen ist mit einer Verbesserung der Schlafstörungen und Tagesmüdigkeit in ca. 1–2 Wochen zu rechnen (mit sehr hoher Wahrscheinlichkeit)." },
+      { id:413, titel:"Compliance-Kontrolle – Medikamentenspiegel, Blisterkontrolle, Apotheken-Protokoll", text:"Eine Kontrolle der Einnahmetreue kann konkret durch wiederholte, zeitnah zur angegebenen Einnahme terminierte Medikamentenspiegelkontrollen im Serum erfolgen, bei Bedarf auch unangekündigt und in kurzen Abständen, um eine regelmäßige Einnahme plausibel zu belegen. Zusätzlich kann die Einnahmetreue durch eine dokumentierte Tablettenabgabe mit Blisterkontrolle, Tablettenzählung und Apotheken-Abgabeprotokollen objektiviert werden, ergänzt durch einen standardisierten Medikationsplan mit Datum, Uhrzeit und Dosis." },
+      { id:414, titel:"Besserung ängstlich-depressiv (Medikamentenadaptierung) – ca. 12 Wochen", text:"Durch eine Adaptierung oder Umstellung der psychopharmakologischen Medikation ist mit hoher Wahrscheinlichkeit innerhalb von etwa 12 Wochen mit einer Besserung der beklagten ängstlich-depressiven Symptomatik zu rechnen." },
+      { id:415, titel:"Besserung Agoraphobie – KVT mit Exposition, ca. 2–3 Wochen", text:"Bei agoraphobischem Vermeidungsverhalten wird eine kognitive Verhaltenstherapie mit Exposition empfohlen, idealerweise als intensives Setting mit täglichen Expositionen über ein bis zwei Wochen. Die Behandlung beginnt mit Psychoedukation über Angstreaktionen, typische Paniksymptome sowie den Kreislauf aus Vermeidung und kurzfristiger Erleichterung. Im Rahmen von In-vivo-Expositionen erfolgen schrittweise geplante Konfrontationen mit gefürchteten Situationen (z.B. öffentliche Verkehrsmittel, Einkaufsläden, Menschenmengen). Unter dieser Vorgehensweise ist mit einer Verbesserung des Vermeidungsverhaltens innerhalb von etwa zwei bis drei Wochen mit hoher Wahrscheinlichkeit zu rechnen." },
+      { id:501, titel:"Keine weiteren Sachverständigen notwendig", text:"Bei der heutigen Untersuchung ergaben sich keine Hinweise auf die Notwendigkeit der Beiziehung weiterer Sachverständiger als die vom Gericht bereits bestellten." },
+      { id:502, titel:"Internistischer Sachverständiger bereits angeregt", text:"Die Hinzuziehung einer/eines internistischen Sachverständigen wurde im Hinblick auf [GRUND] bereits angeregt." },
+      { id:503, titel:"Weitere Sachverständige empfohlen (mehrere Fachgebiete)", text:"Aufgrund der somatischen Beschwerden wird die Beiziehung weiterer Sachverständiger aus dem Bereich [FACHGEBIET 1], [FACHGEBIET 2] sowie [FACHGEBIET 3] empfohlen." },
+      { id:601, titel:"Keine leidensbedingten Krankenstände zu erwarten", text:"Unter Einhaltung des Leistungskalküls sind keine leidensbedingten Krankenstände zu erwarten." }
     ];
-    bausteineAnzeigen();
-    filterButtonsErstellen();
+    renderAnzeige();
   }
 
-  function filterButtonsErstellen() {
-    const kategorien = [...new Set(bausteine.map(b => b.kategorie))];
-    const bar = document.getElementById("filter-bar");
-    kategorien.forEach(kat => {
-      const btn = document.createElement("button");
-      btn.className = "filter-btn";
-      btn.dataset.kat = kat;
-      btn.textContent = kat;
-      btn.onclick = () => filterSetzen(kat, btn);
-      bar.appendChild(btn);
-    });
+  function getBausteinById(id) {
+    return bausteine.find(b => b.id === id);
   }
 
-  function filterSetzen(kat, btnEl) {
-    aktiveKat = kat;
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btnEl.classList.add("active");
-    selectedId = null;
-    aktionButtons(false);
-    bausteineAnzeigen();
-  }
-
-  function bausteineAnzeigen() {
+  function renderAnzeige() {
     const liste = document.getElementById("baustein-list");
-    let gefiltert = bausteine.filter(b => {
-      const katOk = aktiveKat === "Alle" || b.kategorie === aktiveKat;
-      const suchOk = !suchbegriff ||
-        b.titel.toLowerCase().includes(suchbegriff) ||
-        b.text.toLowerCase().includes(suchbegriff);
-      return katOk && suchOk;
-    });
+    const suche = suchbegriff.toLowerCase();
 
-    if (gefiltert.length === 0) {
-      liste.innerHTML = '<p class="no-results">Keine Bausteine gefunden.</p>';
+    if (suche) {
+      const gefiltert = bausteine.filter(b =>
+        b.titel.toLowerCase().includes(suche) ||
+        b.text.toLowerCase().includes(suche)
+      );
+      if (gefiltert.length === 0) {
+        liste.innerHTML = '<p class="no-results">Keine Bausteine gefunden.</p>';
+        return;
+      }
+      liste.innerHTML = gefiltert.map(b => {
+        const preview = b.text.replace(/\n/g, " ").substring(0, 100) + "…";
+        const sel = selectedId === b.id ? " selected" : "";
+        return `<div class="baustein-card${sel}" data-id="${b.id}" onclick="bausteinWaehlen(${b.id})">
+          <div class="baustein-titel">${b.titel}</div>
+          <div class="baustein-preview">${preview}</div>
+        </div>`;
+      }).join("");
       return;
     }
 
+    // Zweistufiges Accordion
     let html = "";
-    let letzteKat = "";
-    gefiltert.forEach(b => {
-      if (aktiveKat === "Alle" && b.kategorie !== letzteKat) {
-        html += `<div class="kategorie-label">${b.kategorie}</div>`;
-        letzteKat = b.kategorie;
+    struktur.forEach(kat => {
+      const katOpen = offeneKats.has(kat.key);
+      const totalCount = kat.subs.reduce((sum, s) => sum + s.ids.length, 0);
+      html += `<div class="kat-group">
+        <div class="kat-header${katOpen ? " open" : ""}" onclick="toggleKat('${kat.key}')">
+          <div class="kat-header-left">
+            <span class="kat-num">${kat.nr}.</span>
+            <span class="kat-title">${kat.titel}</span>
+            ${totalCount > 0 ? `<span class="kat-count">(${totalCount})</span>` : ""}
+          </div>
+          <span class="kat-arrow">▼</span>
+        </div>
+        <div class="kat-body${katOpen ? " open" : ""}">`;
+
+      if (kat.subs.length === 0) {
+        html += `<div class="empty-hint">Noch keine Bausteine vorhanden.</div>`;
+      } else {
+        kat.subs.forEach(sub => {
+          const subOpen = offeneSubs.has(sub.key);
+          const bausteineListe = sub.ids.map(id => getBausteinById(id)).filter(Boolean);
+          html += `<div class="sub-group">
+            <div class="sub-header${subOpen ? " open" : ""}" onclick="toggleSub('${sub.key}')">
+              <div class="sub-header-left">
+                <span class="sub-title">${sub.titel}</span>
+                <span class="sub-count">(${bausteineListe.length})</span>
+              </div>
+              <span class="sub-arrow">▼</span>
+            </div>
+            <div class="sub-body${subOpen ? " open" : ""}">`;
+          bausteineListe.forEach(b => {
+            const preview = b.text.replace(/\n/g, " ").substring(0, 90) + "…";
+            const sel = selectedId === b.id ? " selected" : "";
+            html += `<div class="baustein-card${sel}" data-id="${b.id}" onclick="bausteinWaehlen(${b.id})">
+              <div class="baustein-titel">${b.titel}</div>
+              <div class="baustein-preview">${preview}</div>
+            </div>`;
+          });
+          html += `</div></div>`;
+        });
       }
-      const preview = b.text.replace(/\n/g, " ").substring(0, 100) + "…";
-      const sel = selectedId === b.id ? " selected" : "";
-      html += `
-        <div class="baustein-card${sel}" data-id="${b.id}" onclick="bausteinWaehlen(${b.id})">
-          <div class="baustein-titel">${b.titel}</div>
-          <div class="baustein-preview">${preview}</div>
-          <span class="baustein-tag">${b.kategorie}</span>
-        </div>`;
+      html += `</div></div>`;
     });
     liste.innerHTML = html;
+  }
+
+  function toggleKat(key) {
+    offeneKats.has(key) ? offeneKats.delete(key) : offeneKats.add(key);
+    renderAnzeige();
+  }
+
+  function toggleSub(key) {
+    offeneSubs.has(key) ? offeneSubs.delete(key) : offeneSubs.add(key);
+    renderAnzeige();
   }
 
   function bausteinWaehlen(id) {
@@ -410,16 +334,15 @@
   async function inWordEinfuegen() {
     const b = bausteine.find(x => x.id === selectedId);
     if (!b) return;
-
     try {
       await Word.run(async ctx => {
         const sel = ctx.document.getSelection();
         sel.insertText(b.text, "Replace");
+        sel.font.color = "#FF0000";
         await ctx.sync();
       });
       toast("✓ Baustein eingefügt");
     } catch(e) {
-      // Fallback wenn nicht in Word (z.B. Browser-Demo)
       toast("Demo: Baustein würde eingefügt");
     }
   }
@@ -431,20 +354,11 @@
     setTimeout(() => t.classList.remove("show"), 2200);
   }
 
-  // Events
   document.getElementById("search-input").addEventListener("input", e => {
     suchbegriff = e.target.value.toLowerCase();
     selectedId = null;
     aktionButtons(false);
-    bausteigenAnzeigen();
-  });
-
-  // Typo fix
-  document.getElementById("search-input").addEventListener("input", e => {
-    suchbegriff = e.target.value.toLowerCase();
-    selectedId = null;
-    aktionButtons(false);
-    bausteineAnzeigen();
+    renderAnzeige();
   });
 
   document.getElementById("btn-vorschau").addEventListener("click", vorschauZeigen);
@@ -454,13 +368,11 @@
     if (e.target === document.getElementById("vorschau-overlay")) vorschauSchliessen();
   });
 
-  // Doppelklick = direkt einfügen
   document.getElementById("baustein-list").addEventListener("dblclick", e => {
     const card = e.target.closest(".baustein-card");
     if (card) inWordEinfuegen();
   });
 
-  // Office init
   if (typeof Office !== "undefined") {
     Office.onReady(() => ladeBausteine());
   } else {
