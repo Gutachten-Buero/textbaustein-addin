@@ -94,19 +94,19 @@
       subs: [
         { titel: "A. Einleitung", key: "sub1a", ids: [101,102,103] },
         { titel: "B. Zumutbar – Standard", key: "sub1b", ids: [110,111] },
-        { titel: "B. Zumutbar – Varianten", key: "sub1c", ids: [112,113,114,115,116,117,118] },
-        { titel: "C. Ausgeschlossen – 2/3 Tempo", key: "sub1d", ids: [120,121,122,123,128,134,140,145,143,129] },
-        { titel: "C. Ausgeschlossen – 1/2 Tempo", key: "sub1e", ids: [126,139,132,135,144,147] },
-        { titel: "C. Ausgeschlossen – 1/3 Tempo", key: "sub1f", ids: [125,124,127,137] },
-        { titel: "C. Ausgeschlossen – Normales Tempo", key: "sub1g", ids: [138,141,142,136] },
-        { titel: "C. Ausgeschlossen – Sonderpakete (PTBS/Alkohol)", key: "sub1h", ids: [133,146] },
+        { titel: "B. Zumutbar – Varianten", key: "sub1c", ids: [112,113,114,115,116,117,118,119,122] },
+        { titel: "C. Ausgeschlossen – 2/3 Tempo", key: "sub1d", ids: [120,121,123,124,128,134,140,145,143,129,151] },
+        { titel: "C. Ausgeschlossen – 1/2 Tempo", key: "sub1e", ids: [126,139,132,135,144,147,150,153] },
+        { titel: "C. Ausgeschlossen – 1/3 Tempo", key: "sub1f", ids: [125,127,137,148] },
+        { titel: "C. Ausgeschlossen – Normales Tempo", key: "sub1g", ids: [138,141,142,149,152,154,155,136] },
+        { titel: "C. Ausgeschlossen – Sonderpakete (Alkohol/Höhe/Glücksspiel)", key: "sub1h", ids: [133,146] },
         { titel: "D. Zustand seit", key: "sub1i", ids: [130,131] }
       ]
     },
     {
       nr: 2, titel: "Vergleichsgutachten / Leidenszustand", key: "kat2",
       subs: [
-        { titel: "Verbesserung", key: "sub2a", ids: [201,202] },
+        { titel: "Verbesserung", key: "sub2a", ids: [201,202,205] },
         { titel: "Sonderfälle", key: "sub2b", ids: [203,204] }
       ]
     },
@@ -114,15 +114,15 @@
       nr: 3, titel: "Verschlechterungsprognose", key: "kat3",
       subs: [
         { titel: "Standard-Varianten", key: "sub3a", ids: [301,302,303] },
-        { titel: "Mit Zusatzempfehlung", key: "sub3b", ids: [304] }
+        { titel: "Mit Zusatzempfehlung", key: "sub3b", ids: [304,305] }
       ]
     },
     {
       nr: 4, titel: "Besserungsmöglichkeiten", key: "kat4",
       subs: [
-        { titel: "Kurzfristig (1–2 Wochen)", key: "sub4a", ids: [403,407,412] },
-        { titel: "Mittelfristig (6–8 Wochen)", key: "sub4b", ids: [401,402,404,405,406,408] },
-        { titel: "Längerfristig (8–12 Wochen)", key: "sub4c", ids: [409,410,411,414] },
+        { titel: "Kurzfristig (1–2 Wochen)", key: "sub4a", ids: [403,407,412,417,419,420] },
+        { titel: "Mittelfristig (6–8 Wochen)", key: "sub4b", ids: [401,402,404,405,406,408,416,421] },
+        { titel: "Längerfristig (8+ Wochen)", key: "sub4c", ids: [409,410,411,414,418] },
         { titel: "Agoraphobie / KVT", key: "sub4d", ids: [415] },
         { titel: "Compliance-Kontrolle", key: "sub4e", ids: [413] }
       ]
@@ -131,20 +131,34 @@
       nr: 5, titel: "Notwendigkeit Sachverständige", key: "kat5",
       subs: [
         { titel: "Keine weiteren SV", key: "sub5a", ids: [501] },
-        { titel: "Weitere SV notwendig / angeregt", key: "sub5b", ids: [502,503] }
+        { titel: "Weitere SV notwendig / angeregt", key: "sub5b", ids: [502,503,504] }
       ]
     },
     {
       nr: 6, titel: "Krankenstände", key: "kat6",
       subs: [
-        { titel: "Prognose Krankenstände", key: "sub6a", ids: [601] }
+        { titel: "Prognose Krankenstände", key: "sub6a", ids: [601,602] }
+      ]
+    },
+    { nr: 7, titel: "Reisefähigkeit", key: "kat7", subs: [] },
+    { nr: 8, titel: "Massenbeförderung / Fahrtendienst", key: "kat8", subs: [] },
+    {
+      nr: 9, titel: "Rehabilitationsgeld – Entziehung", key: "kat9",
+      subs: [
+        { titel: "Vergleich & Arbeitsfähigkeit", key: "sub9a", ids: [901,902] }
       ]
     },
     {
-      nr: 7, titel: "Reisefähigkeit", key: "kat7", subs: []
+      nr: 10, titel: "Pflegegeld", key: "kat10",
+      subs: [
+        { titel: "Einleitung & Ergebnis", key: "sub10a", ids: [1001,1002,1003,1004] }
+      ]
     },
     {
-      nr: 8, titel: "Massenbeförderung / Fahrtendienst", key: "kat8", subs: []
+      nr: 11, titel: "MdE – Dienstunfall / Versehrtenrente", key: "kat11",
+      subs: [
+        { titel: "Kausalität & Bewertung", key: "sub11a", ids: [1101,1102] }
+      ]
     }
   ];
 
@@ -190,6 +204,20 @@
       { id:146, titel:"Ausschlüsse – 2/3 Tempo + Menschenansammlungen + Akkord + Lenken + Nacht + Exposition (ohne Führung)", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
       { id:130, titel:"Zustand besteht mindestens seit Antragstellung", text:"Der Zustand besteht mindestens seit Antragstellung." },
       { id:131, titel:"Zustand besteht mindestens seit Entziehung der Leistung", text:"Der Zustand besteht mindestens seit Entziehung der Leistung." },
+
+      // Neue Zumutbar
+      { id:119, titel:"⌀ geistig · niedrig psychisch · geringe Teamfähigkeit + Nacht", text:"Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Arbeiten, die nur geringe Teamfähigkeit voraussetzen\n• Anmarschwege im städtischen und ländlichen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr\n• Nachtarbeit (22:00–6:00)" },
+      { id:122, titel:"⌀ geistig · niedrig psychisch · reduzierte Teamfähigkeit · nur städtisch", text:"Zumutbar sind:\n• Arbeiten mit durchschnittlichem geistigen und niedrigem psychischen Anforderungsprofil, ganztägig zu den üblichen Arbeitszeiten, ohne zusätzliche Pausen\n• Anlernbarkeit und Anweisbarkeit dem Kalkül entsprechend gegeben\n• Teamfähigkeit reduziert gegeben\n• Anmarschwege im städtischen Bereich uneingeschränkt\n• Mengenleistung dem Kalkül entsprechend\n• Schichtarbeit im Zweischichtsystem (jeweils nur eine Schichtart pro Woche):\n – Frühschicht: meist zwischen 06:00 und 14:00 Uhr\n – Spätschicht: meist zwischen 14:00 und 22:00 Uhr" },
+
+      // Neue Ausschluss-Pakete
+      { id:148, titel:"1/3 Tempo · Akkord + Lenken + Nacht + Exposition [kein Menschenansml./Führung]", text:"Ausgeschlossen sind:\n• Mehr als nur 1/3 zeitig forciertes Arbeitstempo\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:149, titel:"Norm. Tempo · Führung + Lenken + Nacht + Exposition [kein Akkord]", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Arbeiten mit Führungsaufgaben\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Nachtarbeit (22:00–6:00)" },
+      { id:152, titel:"Norm. Tempo · Nacht + Höhe + Führung + Akkord + Lenken + Exposition + Alkohol + Glücksspiel", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Nachtarbeit (22:00–6:00)\n• Arbeiten in höhenexponierter Lage\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Eine Beschäftigung in alkoholnahen Bereichen kommt aus psychiatrischer Sicht derzeit nicht in Betracht.\n• Glücksspielbranche" },
+      { id:153, titel:"1/2 Tempo · Menschenansml. + Führung + Publikumssituationen [kein Akkord/Lenken/Nacht]", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Arbeiten mit Führungsaufgaben\n• Berufliche Tätigkeiten mit Publikums-, Kontakt-, Gesprächs- und Prüfungssituationen" },
+      { id:154, titel:"Norm. Tempo · Menschenansml. + Schichtarbeit + Akkord + Lenken + Nacht + Exposition + Alkohol", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Schichtarbeit\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)\n• Tätigkeiten mit regelmäßigem Umgang mit alkoholischen Getränken, insbesondere mit Ausschank, Verkauf, Lagerung, Auslieferung oder Verkostung, sind nicht zumutbar." },
+      { id:155, titel:"Norm. Tempo · Führung + Akkord + Lenken [kein Nacht/Exposition]", text:"Ausgeschlossen sind:\n• Mehr als nur normales Arbeitstempo\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext" },
+      { id:150, titel:"1/2 Tempo · Schichtarbeit + Führung + Akkord + Lenken + Nacht + Exposition", text:"Ausgeschlossen sind:\n• Mehr als nur 1/2 zeitig forciertes Arbeitstempo\n• Schichtarbeit\n• Arbeiten mit Führungsaufgaben\n• Akkordarbeit\n• Das Lenken von Kraftfahrzeugen, Fahrrädern, Elektrorollern, Baumaschinen sowie vergleichbaren Fahrzeugen im beruflichen Kontext\n• Nachtarbeit (22:00–6:00)\n• Tätigkeiten mit erhöhter Unfall- oder Verletzungsgefahr (exponierte Arbeit)" },
+      { id:151, titel:"2/3 Tempo · Menschenansml. + Akkord + Nacht [kein Führung/Lenken/Exp.]", text:"Ausgeschlossen sind:\n• Mehr als nur 2/3 zeitig forciertes Arbeitstempo\n• Arbeiten bei großen Menschenansammlungen wie z. B. bei einem Festival\n• Akkordarbeit\n• Nachtarbeit (22:00–6:00)" },
       { id:201, titel:"Verbesserung seit Vorgutachten – kalkülsrelevant", text:"Es ergeben sich im Vergleich zum [DATUM] kalkülsrelevante Verbesserungen im Sinne einer Besserung der [SYMPTOMATIK]. In der Zusammenschau der hier vorgenommenen Untersuchungen einschließlich Beschwerdevalidierung und Laboruntersuchung ergeben sich im Rahmen der Plausibilitätsprüfung der durchgeführten Begutachtung relevante Verbesserungen im Bereich des Affekts, der Schwingungsfähigkeit und der Stimmung." },
       { id:202, titel:"Wesentliche Besserung seit Leistungsgewährung", text:"Seit der rechtskräftigen Gewährung vom [DATUM] hat sich das Leistungskalkül wesentlich gebessert." },
       { id:203, titel:"Frühere absolute Arbeitsunfähigkeit – kein Leistungskalkül erstellbar", text:"Zum Zeitpunkt des Gewährungsgutachtens konnte kein Restleistungskalkül erstellt werden. Aufgrund der Komplexität des damaligen Beschwerdebildes kann auch rückwirkend kein Leistungskalkül erstellt werden." },
@@ -198,6 +226,7 @@
       { id:302, titel:"Keine Verschlechterung – Kurzversion (ohne Empfehlungen)", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre." },
       { id:303, titel:"Keine Verschlechterung – Empfehlungen bei Bedarf (abgeschwächt)", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind bei Bedarf notwendig." },
       { id:304, titel:"Keine Verschlechterung + kognitive Verhaltenstherapie notwendig", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig. Des Weiteren ist eine störungsspezifische kognitive Verhaltenstherapie im Einzel- oder Gruppensetting einschließlich Exposition notwendig." },
+      { id:305, titel:"Keine Verschlechterung + Abstinenz Alkohol/Drogen zwingend", text:"Derzeit bestehen keine Hinweise darauf, dass bei Einhaltung der Mitwirkungspflichten durch die klagende Partei in absehbarer Zeit (innerhalb der nächsten 18 Monate) mit einer kalkülsrelevanten Verschlechterung des Gesundheitszustandes (fachspezifisch) zu rechnen wäre. Regelmäßige fachärztliche Kontrollen, Abstinenz von Alkohol und Drogen, situationsadäquate kurzfristige Anpassungen der Medikation, therapeutische Gespräche und diagnosespezifische Psychoedukation sind zwingend notwendig." },
       { id:401, titel:"Besserung Depression / subdepressiv – ca. 6 Wochen", text:"Mit einer Verbesserung des depressiven Zustandsbildes ist in ca. 6 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
       { id:402, titel:"Besserung ängstlich-depressiv – ca. 8 Wochen", text:"Durch psychopharmakologische Medikation ist mit einer Verbesserung des ängstlich-depressiven Zustandsbildes in ca. 8 Wochen zu rechnen (mit hoher Wahrscheinlichkeit)." },
       { id:403, titel:"Besserung Schlafstörung / Tag-Nacht-Rhythmus – ca. 1 Woche", text:"Durch Etablierung eines Tag-Nacht-Rhythmus mit psychopharmakologischer Medikation und/oder verhaltenstherapeutischen Maßnahmen ist mit einer Verbesserung der Schlafstörung in ca. 1 Woche zu rechnen (mit sehr hoher Wahrscheinlichkeit)." },
@@ -216,7 +245,30 @@
       { id:501, titel:"Keine weiteren Sachverständigen notwendig", text:"Bei der heutigen Untersuchung ergaben sich keine Hinweise auf die Notwendigkeit der Beiziehung weiterer Sachverständiger als die vom Gericht bereits bestellten." },
       { id:502, titel:"Internistischer Sachverständiger bereits angeregt", text:"Die Hinzuziehung einer/eines internistischen Sachverständigen wurde im Hinblick auf [GRUND] bereits angeregt." },
       { id:503, titel:"Weitere Sachverständige empfohlen (mehrere Fachgebiete)", text:"Aufgrund der somatischen Beschwerden wird die Beiziehung weiterer Sachverständiger aus dem Bereich [FACHGEBIET 1], [FACHGEBIET 2] sowie [FACHGEBIET 3] empfohlen." },
-      { id:601, titel:"Keine leidensbedingten Krankenstände zu erwarten", text:"Unter Einhaltung des Leistungskalküls sind keine leidensbedingten Krankenstände zu erwarten." }
+      { id:504, titel:"Internistischer SV empfohlen (Folsäure/Anämie/TSH/Hypersomnie)", text:"Aufgrund von Folsäuremangel, mikrozytärer Anämie, TSH-Erhöhung sowie Hypersomnie ist aus ärztlicher Sicht eine ergänzende Begutachtung durch eine internistische Sachverständige bzw. einen internistischen Sachverständigen sinnvoll." },
+      { id:416, titel:"Besserung ängstlich-subdepressiv + Rauchstopp – ca. 6 Wochen", text:"Durch Adaptation der psychopharmakologischen Medikation ist mit einer Verbesserung des ängstlich-subdepressiven Zustandsbildes in ca. sechs Wochen zu rechnen, mit hoher Wahrscheinlichkeit. Eine Reduktion beziehungsweise ein Rauchstopp kann mit hoher Wahrscheinlichkeit die Tagesmüdigkeit wesentlich reduzieren." },
+      { id:417, titel:"Besserung Schlaf durch Alkoholabstinenz + Medikamentenumstellung – ca. 1 Woche", text:"Durch eine Adaptierung der psychopharmakologischen Medikation mit Umstellung auf eine kürzer wirksame schlafanstoßende Medikation ist innerhalb von etwa einer Woche eine Besserung der Schlafstörung bei verbesserter Compliance zu erwarten. Des Weiteren kann sich die Durchschlafqualität im Rahmen einer Alkoholabstinenz deutlich verbessern." },
+      { id:418, titel:"Kalkülsrelevante Besserung bei leitliniengerechter Therapie – ca. 8 Monate", text:"Bei leitliniengerechter und konsequenter Therapie ist eine kalkülsrelevante Besserung der Symptomatik zu erwarten. Eine kalkülsrelevante Besserung ist voraussichtlich in etwa acht Monaten zu erwarten." },
+      { id:419, titel:"Besserung agitiert-dysphorisch durch Medikamentenanpassung – wenige Tage", text:"Durch Anpassung der psychopharmakologischen Medikation ist mit einer Verbesserung des agitiert-dysphorischen Zustandsbildes zu rechnen. Verbesserungen können bereits innerhalb weniger Tage eintreten. Durch die Erhebung von Medikamentenspiegeln kann die Therapie optimiert und eine wirksame Dosierung bei möglichst guter Verträglichkeit eruiert werden." },
+      { id:420, titel:"Besserung ängstlich durch Koffeinreduktion – ca. 2 Wochen; Nikotinabstinenz – ca. 5 Monate", text:"Eine spezifische Behandlung der Nikotinabhängigkeit sowie eine Reduktion des Koffeinkonsums lassen eine Besserung der ängstlichen Symptomatik erwarten, wobei hinsichtlich der Koffeinreduktion mit einer Verbesserung innerhalb von etwa zwei Wochen und hinsichtlich der Nikotinabhängigkeit innerhalb von etwa fünf Monaten zu rechnen ist (mit sehr hoher Wahrscheinlichkeit)." },
+      { id:421, titel:"Besserung soziale Phobie – KVT ca. 12 Wochen", text:"Bei vorliegender sozialer Phobie ist insbesondere eine kognitive Verhaltenstherapie indiziert, insbesondere im Hinblick auf Ängste in Publikums-, Kontakt-, Gesprächs- und Prüfungssituationen. Mit einer klinisch relevanten Besserung ist voraussichtlich innerhalb von etwa 12 Wochen zu rechnen." },
+
+      { id:601, titel:"Keine leidensbedingten Krankenstände zu erwarten", text:"Unter Einhaltung des Leistungskalküls sind keine leidensbedingten Krankenstände zu erwarten." },
+      { id:602, titel:"Krankenstände nicht mehr als 2 Wochen pro Jahr", text:"Unter Einhaltung des Leistungskalküls sind keine leidensbedingten Krankenstände von mehr als 2 Wochen pro Jahr zu erwarten." },
+
+      { id:205, titel:"Verbesserung – deutliche Reduktion der Medikation als Hinweis", text:"Im Vergleich zum früheren Gutachten zeigt sich keine schwer depressive, ängstliche und affektiv verarmte Symptomatik mehr. Insgesamt zeigt sich im Vergleich eine deutliche Reduktion der psychiatrischen Medikation, was als Hinweis auf eine deutliche kalkülsrelevante Verbesserung des psychischen Zustandsbildes zu werten ist." },
+
+      // ── KAT 11: MdE-GUTACHTEN ──────────────────────────────────────────────
+      { id:1101, titel:"MdE – Kein kausaler Zusammenhang mit Dienstunfall (0%)", text:"Im Hinblick auf den geschilderten Dienstunfall lässt sich ein schlüssiger Zusammenhang zwischen dem Ereignis und den beklagten Symptomen anhand der vorliegenden Aktenlage nicht ohne Weiteres ableiten. Aufgrund der minimen Schwere des Unfallhergangs, des praktisch sicheren Nachweises bedeutsamer Antwortverzerrungen, der fehlenden nachfolgenden objektivierbaren Symptomatik sowie der vordokumentierten vorbestehenden psychischen Diagnosen erscheint ein kausaler Zusammenhang nicht hinreichend belegt.\nAus rein psychiatrischer Sicht ist die MdE bezogen auf das Ereignis mit 0 von 100 (Null Prozent) zu bewerten." },
+      { id:1102, titel:"MdE – Vorschäden / Vordiagnosen bereits vor Unfall dokumentiert", text:"Im Rahmen der Beurteilung der Kausalität des Vorfalles für die festgestellten Gesundheitsstörungen sowie einer Mitwirkung von allfälligen Vorschäden ergibt sich aus der Aktenlage, dass bereits vor dem Unfall [DIAGNOSEN] dokumentiert waren. Die beklagten Beschwerden sind daher zumindest teilweise auf vorbestehende Erkrankungen zurückzuführen." },
+      { id:901, titel:"Kein Leistungskalkül erstellbar – absolute Arbeitsunfähigkeit", text:"Zum Untersuchungszeitpunkt erscheint der Kläger / die Klägerin in Zusammenschau der Aktenlage, der vorgelegten Befunde, der eigenen Untersuchung einschließlich der erhobenen Laborbefunde sowie der hier durchgeführten testpsychologischen Untersuchungen nicht in der Lage, einer Erwerbstätigkeit auf dem allgemeinen Arbeitsmarkt nachzugehen." },
+      { id:902, titel:"Keine Besserung seit Gewährung – eher leichte Verschlechterung", text:"Eine Besserung der Symptomatik im Vergleich zum Gewährungsgutachten ließ sich nicht feststellen. Gegenwärtig ist vielmehr eher von einer leichten Verschlechterung auszugehen. Bei leitliniengerechter und konsequenter Therapie ist eine kalkülsrelevante Besserung der Symptomatik zu erwarten, sodass Tätigkeiten mit durchschnittlichem geistigem sowie psychischem Anforderungsprofil mittelfristig wieder in ganztägigem Ausmaß erreichbar erscheinen." },
+
+      // ── KAT 10: PFLEGEGELD ─────────────────────────────────────────────────
+      { id:1001, titel:"Einleitung Pflegegeldgutachten – Auftrag", text:"Dem Sachverständigen wird aufgetragen, binnen 6 Wochen Befund und Gutachten über den Gesundheitszustand der klagenden Partei und ihren Pflegebedarf zu erstatten. Auszugehen ist von der Einstufungsverordnung zum BPGG." },
+      { id:1002, titel:"Erschwerniszuschlag – psychotisches Zustandsbild", text:"Erschwerniszuschlag: Aufgrund der psychotischen Persönlichkeitsorganisation mit Störungen der Orientierung, des Antriebs, des Denkens, der emotionalen Kontrolle sowie der sozialen Fähigkeiten ist bei der Betreuung ein besonderes Maß an Geduld und Einfühlungsvermögen erforderlich." },
+      { id:1003, titel:"Kein Pflegebedarf feststellbar", text:"Unter Berücksichtigung der Aktenlage, der vorgelegten Befunde, der eigenen Untersuchung einschließlich der erhobenen Laborbefunde sowie der testpsychologischen Untersuchung mit Beschwerdevalidierung und anschließender Plausibilitätsprüfung ergeben sich insgesamt keine ausreichenden Hinweise auf das Vorliegen eines Pflegebedarfs." },
+      { id:1004, titel:"Pflegebedarf – Zusammenfassung Stunden pro Monat", text:"Zusammenfassend wird aus fachspezifisch psychiatrischer Sicht ein Betreuungsbedarf im Ausmaß von [STUNDEN] Stunden pro Monat vorgeschlagen." }
     ];
     renderAnzeige();
   }
